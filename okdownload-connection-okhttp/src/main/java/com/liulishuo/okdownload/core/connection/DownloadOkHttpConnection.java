@@ -31,20 +31,20 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class DownloadOkHttp3Connection implements DownloadConnection, DownloadConnection.Connected {
+public class DownloadOkHttpConnection implements DownloadConnection, DownloadConnection.Connected {
     @NonNull final OkHttpClient client;
     @NonNull private final Request.Builder requestBuilder;
 
     private Request request;
     Response response;
 
-    DownloadOkHttp3Connection(@NonNull OkHttpClient client,
-                              @NonNull Request.Builder requestBuilder) {
+    DownloadOkHttpConnection(@NonNull OkHttpClient client,
+                             @NonNull Request.Builder requestBuilder) {
         this.client = client;
         this.requestBuilder = requestBuilder;
     }
 
-    DownloadOkHttp3Connection(@NonNull OkHttpClient client, @NonNull String url) {
+    DownloadOkHttpConnection(@NonNull OkHttpClient client, @NonNull String url) {
         this(client, new Request.Builder().url(url));
     }
 
@@ -143,7 +143,7 @@ public class DownloadOkHttp3Connection implements DownloadConnection, DownloadCo
                 }
             }
 
-            return new DownloadOkHttp3Connection(client, url);
+            return new DownloadOkHttpConnection(client, url);
         }
     }
 }
