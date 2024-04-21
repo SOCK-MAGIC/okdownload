@@ -18,6 +18,7 @@ package com.liulishuo.okdownload.core.dispatcher;
 
 
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -47,18 +48,18 @@ public class DownloadDispatcher {
 
     private static final String TAG = "DownloadDispatcher";
 
-//    @SuppressFBWarnings(value = "IS", justification = "Not so urgency")
+    //    @SuppressFBWarnings(value = "IS", justification = "Not so urgency")
     int maxParallelRunningCount = 5;
 
     // for sort performance(not need to copy one array), using ArrayList instead of deque(for add
     // on top, remove on bottom).
-    private final List<DownloadCall> readyAsyncCalls;
+    private final List<DownloadCall> readyAsyncCalls = new ArrayList<DownloadCall>();
 
-    private final List<DownloadCall> runningAsyncCalls;
-    private final List<DownloadCall> runningSyncCalls;
+    private final List<DownloadCall> runningAsyncCalls = new ArrayList<DownloadCall>();
+    private final List<DownloadCall> runningSyncCalls = new ArrayList<DownloadCall>();
 
     // for enqueueing task during task is finishing
-    private final List<DownloadCall> finishingCalls;
+    private final List<DownloadCall> finishingCalls = new ArrayList<DownloadCall>();
 
     // for the case of tasks has been cancelled but didn't remove from runningAsyncCalls list yet.
     private final AtomicInteger flyingCanceledAsyncCallCount = new AtomicInteger();
@@ -68,35 +69,28 @@ public class DownloadDispatcher {
     // for avoiding processCalls when doing enqueue/cancel operation
     private final AtomicInteger skipProceedCallCount = new AtomicInteger();
 
-//    @SuppressFBWarnings(value = "IS", justification = "Not so urgency")
+    //    @SuppressFBWarnings(value = "IS", justification = "Not so urgency")
     private DownloadStore store;
 
     public DownloadDispatcher() {
-        this(new ArrayList<DownloadCall>(), new ArrayList<DownloadCall>(),
-                new ArrayList<DownloadCall>(), new ArrayList<DownloadCall>());
+        this(new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
+                Util.threadFactory("OkDownload Download", false)));
     }
 
-    DownloadDispatcher(List<DownloadCall> readyAsyncCalls,
-                       List<DownloadCall> runningAsyncCalls,
-                       List<DownloadCall> runningSyncCalls,
-                       List<DownloadCall> finishingCalls) {
-        this.readyAsyncCalls = readyAsyncCalls;
-        this.runningAsyncCalls = runningAsyncCalls;
-        this.runningSyncCalls = runningSyncCalls;
-        this.finishingCalls = finishingCalls;
+    public DownloadDispatcher(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public void setDownloadStore(@NonNull DownloadStore store) {
         this.store = store;
     }
 
-    synchronized ExecutorService getExecutorService() {
-        if (executorService == null) {
-            executorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                    60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
-                    Util.threadFactory("OkDownload Download", false));
-        }
+    public void setExecutorService(@NonNull ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
+    synchronized ExecutorService getExecutorService() {
         return executorService;
     }
 

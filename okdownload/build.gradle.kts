@@ -5,6 +5,9 @@ plugins {
 
 android {
     namespace = "com.liulishuo.okdownload"
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
