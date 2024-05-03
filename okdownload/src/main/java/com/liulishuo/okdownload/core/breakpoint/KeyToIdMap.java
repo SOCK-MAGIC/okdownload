@@ -18,7 +18,7 @@ package com.liulishuo.okdownload.core.breakpoint;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
+import androidx.collection.SparseArrayCompat;
 
 import com.liulishuo.okdownload.DownloadTask;
 
@@ -27,20 +27,23 @@ import java.util.HashMap;
 public class KeyToIdMap {
 
     @SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
-    @NonNull private final HashMap<String, Integer> keyToIdMap;
-    @NonNull private final SparseArray<String> idToKeyMap;
+    @NonNull
+    private final HashMap<String, Integer> keyToIdMap;
+    @NonNull
+    private final SparseArrayCompat<String> idToKeyMap;
 
     KeyToIdMap() {
-        this(new HashMap<String, Integer>(), new SparseArray<String>());
+        this(new HashMap<String, Integer>(), new SparseArrayCompat<String>());
     }
 
     KeyToIdMap(@NonNull HashMap<String, Integer> keyToIdMap,
-               @NonNull SparseArray<String> idToKeyMap) {
+               @NonNull SparseArrayCompat<String> idToKeyMap) {
         this.keyToIdMap = keyToIdMap;
         this.idToKeyMap = idToKeyMap;
     }
 
-    @Nullable public Integer get(@NonNull DownloadTask task) {
+    @Nullable
+    public Integer get(@NonNull DownloadTask task) {
         final Integer candidate = keyToIdMap.get(generateKey(task));
         if (candidate != null) return candidate;
         return null;

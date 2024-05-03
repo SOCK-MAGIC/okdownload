@@ -17,6 +17,7 @@
 package com.liulishuo.okdownload.core.download;
 
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 
 import com.liulishuo.okdownload.DownloadTask;
@@ -73,7 +74,8 @@ public class BreakpointLocalCheck {
      *
      * @return the cause of resume failed.
      */
-    @NonNull public ResumeFailedCause getCauseOrThrow() {
+    @NonNull
+    public ResumeFailedCause getCauseOrThrow() {
         if (!infoRight) {
             return INFO_DIRTY;
         } else if (!fileExist) {
@@ -134,7 +136,8 @@ public class BreakpointLocalCheck {
         dirty = !infoRight || !fileExist || !outputStreamSupport;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "fileExist[" + fileExist + "] "
                 + "infoRight[" + infoRight + "] "
                 + "outputStreamSupport[" + outputStreamSupport + "] "

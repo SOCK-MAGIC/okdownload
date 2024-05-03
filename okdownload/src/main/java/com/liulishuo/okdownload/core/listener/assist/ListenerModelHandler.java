@@ -18,7 +18,7 @@ package com.liulishuo.okdownload.core.listener.assist;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
+import androidx.collection.SparseArrayCompat;
 
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
@@ -27,7 +27,7 @@ public class ListenerModelHandler<T extends ListenerModelHandler.ListenerModel> 
         ListenerAssist {
 
     volatile T singleTaskModel;
-    final SparseArray<T> modelList = new SparseArray<>();
+    final SparseArrayCompat<T> modelList = new SparseArrayCompat<>();
 
     private Boolean alwaysRecoverModel;
     private final ModelCreator<T> creator;
@@ -44,11 +44,13 @@ public class ListenerModelHandler<T extends ListenerModelHandler.ListenerModel> 
         this.alwaysRecoverModel = isAlwaysRecoverModel;
     }
 
-    @Override public void setAlwaysRecoverAssistModelIfNotSet(boolean isAlwaysRecoverAssistModel) {
+    @Override
+    public void setAlwaysRecoverAssistModelIfNotSet(boolean isAlwaysRecoverAssistModel) {
         if (this.alwaysRecoverModel == null) this.alwaysRecoverModel = isAlwaysRecoverAssistModel;
     }
 
-    @NonNull T addAndGetModel(@NonNull DownloadTask task, @Nullable BreakpointInfo info) {
+    @NonNull
+    T addAndGetModel(@NonNull DownloadTask task, @Nullable BreakpointInfo info) {
         T model = creator.create(task.getId());
         synchronized (this) {
             if (singleTaskModel == null) {
@@ -65,7 +67,8 @@ public class ListenerModelHandler<T extends ListenerModelHandler.ListenerModel> 
         return model;
     }
 
-    @Nullable T getOrRecoverModel(@NonNull DownloadTask task, @Nullable BreakpointInfo info) {
+    @Nullable
+    T getOrRecoverModel(@NonNull DownloadTask task, @Nullable BreakpointInfo info) {
         final int id = task.getId();
 
         T model = null;
@@ -80,7 +83,8 @@ public class ListenerModelHandler<T extends ListenerModelHandler.ListenerModel> 
         return model;
     }
 
-    @NonNull T removeOrCreate(@NonNull DownloadTask task, @Nullable BreakpointInfo info) {
+    @NonNull
+    T removeOrCreate(@NonNull DownloadTask task, @Nullable BreakpointInfo info) {
         final int id = task.getId();
         T model;
         synchronized (this) {

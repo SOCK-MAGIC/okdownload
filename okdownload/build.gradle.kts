@@ -11,6 +11,9 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.7.1")
+    implementation(libs.androidx.annotation)
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.collection)
     testImplementation(libs.junit)
 }

@@ -39,7 +39,7 @@ import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.liulishuo.okdownload.core.breakpoint.BreakpointStoreOnCache;
 import com.liulishuo.okdownload.core.breakpoint.DownloadStore;
 import com.liulishuo.okdownload.core.connection.DownloadConnection;
-import com.liulishuo.okdownload.core.connection.DownloadUrlConnection;
+import com.liulishuo.okdownload.core.connection.DownloadOkHttpConnection;
 
 import java.io.File;
 import java.io.IOException;
@@ -288,7 +288,7 @@ public class Util {
         } catch (InvocationTargetException ignored) {
         }
 
-        return new DownloadUrlConnection.Factory();
+        return new DownloadOkHttpConnection.Factory();
     }
 
 

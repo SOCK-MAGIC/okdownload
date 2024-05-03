@@ -17,10 +17,11 @@
 package com.liulishuo.okdownload;
 
 import android.net.Uri;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
+import androidx.collection.SparseArrayCompat;
 
 import com.liulishuo.okdownload.core.IdentifiedTask;
 import com.liulishuo.okdownload.core.Util;
@@ -45,11 +46,13 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class DownloadTask extends IdentifiedTask implements Comparable<DownloadTask> {
     private final int id;
-    @NonNull private final String url;
+    @NonNull
+    private final String url;
     private final Uri uri;
     private final Map<String, List<String>> headerMapFields;
 
-    @Nullable private BreakpointInfo info;
+    @Nullable
+    private BreakpointInfo info;
     /**
      * This value more larger the priority more high.
      */
@@ -66,8 +69,10 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
     private final int syncBufferSize;
     private final int syncBufferIntervalMills;
 
-    @Nullable private final Integer connectionCount;
-    @Nullable private final Boolean isPreAllocateLength;
+    @Nullable
+    private final Integer connectionCount;
+    @Nullable
+    private final Boolean isPreAllocateLength;
 
     /**
      * if this task has already completed with
@@ -79,19 +84,24 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
     // end optimize ------------------
 
     private volatile DownloadListener listener;
-    private volatile SparseArray<Object> keyTagMap;
+    private volatile SparseArrayCompat<Object> keyTagMap;
     private Object tag;
     private final boolean wifiRequired;
 
     private final AtomicLong lastCallbackProcessTimestamp;
     private final boolean filenameFromResponse;
 
-    @NonNull private final DownloadStrategy.FilenameHolder filenameHolder;
-    @NonNull private final File providedPathFile;
-    @NonNull private final File directoryFile;
+    @NonNull
+    private final DownloadStrategy.FilenameHolder filenameHolder;
+    @NonNull
+    private final File providedPathFile;
+    @NonNull
+    private final File directoryFile;
 
-    @Nullable private File targetFile;
-    @Nullable private String redirectLocation;
+    @Nullable
+    private File targetFile;
+    @Nullable
+    private String redirectLocation;
 
     public DownloadTask(String url, Uri uri, int priority, int readBufferSize, int flushBufferSize,
                         int syncBufferSize, int syncBufferIntervalMills,
@@ -222,7 +232,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
     /**
      * This id can be used on {@link BreakpointStore}
      */
-    @Override public int getId() {
+    @Override
+    public int getId() {
         return this.id;
     }
 
@@ -232,7 +243,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      * @return the filename of the file to store download data. {@code null} if you not provided it
      * and okdownload isn't get response yet.
      */
-    @Nullable public String getFilename() {
+    @Nullable
+    public String getFilename() {
         return filenameHolder.get();
     }
 
@@ -273,7 +285,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      *
      * @return the url for this task.
      */
-    @NonNull public String getUrl() {
+    @NonNull
+    public String getUrl() {
         return url;
     }
 
@@ -286,7 +299,9 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
         return redirectLocation;
     }
 
-    @NonNull @Override protected File getProvidedPathFile() {
+    @NonNull
+    @Override
+    protected File getProvidedPathFile() {
         return this.providedPathFile;
     }
 
@@ -298,7 +313,9 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      *
      * @return the parent path of the file store downloaded data.
      */
-    @Override @NonNull public File getParentFile() {
+    @Override
+    @NonNull
+    public File getParentFile() {
         return directoryFile;
     }
 
@@ -310,7 +327,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      * @return the path of file store downloaded data. {@code null} is there isn't filename found
      * yet for the file of this task.
      */
-    @Nullable public File getFile() {
+    @Nullable
+    public File getFile() {
         final String filename = filenameHolder.get();
         if (filename == null) return null;
         if (targetFile == null) targetFile = new File(directoryFile, filename);
@@ -377,7 +395,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      *
      * @return the connection count you set.
      */
-    @Nullable public Integer getSetConnectionCount() {
+    @Nullable
+    public Integer getSetConnectionCount() {
         return connectionCount;
     }
 
@@ -387,7 +406,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      *
      * @return whether need to pre-allocate length you set.
      */
-    @Nullable public Boolean getSetPreAllocateLength() {
+    @Nullable
+    public Boolean getSetPreAllocateLength() {
         return isPreAllocateLength;
     }
 
@@ -426,7 +446,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      * @return {@code null} Only if there isn't any info for this task yet, otherwise you can get
      * the info for the task.
      */
-    @Nullable public BreakpointInfo getInfo() {
+    @Nullable
+    public BreakpointInfo getInfo() {
         if (info == null) info = OkDownload.with().breakpointStore().get(id);
         return info;
     }
@@ -452,7 +473,7 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
     public synchronized DownloadTask addTag(int key, Object value) {
         if (keyTagMap == null) {
             synchronized (this) {
-                if (keyTagMap == null) keyTagMap = new SparseArray<>();
+                if (keyTagMap == null) keyTagMap = new SparseArrayCompat<>();
             }
         }
 
@@ -595,7 +616,7 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
                 // only if filename is provided and not provided through uri
                 && filenameHolder.get() != null
                 && !new File(uri.getPath()).getName().equals(filenameHolder.get())
-                ) {
+        ) {
             builder.setFilename(filenameHolder.get());
         }
 
@@ -616,7 +637,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
         this.keyTagMap = oldTask.keyTagMap;
     }
 
-    @Override public int compareTo(@NonNull DownloadTask o) {
+    @Override
+    public int compareTo(@NonNull DownloadTask o) {
         return o.getPriority() - getPriority();
     }
 
@@ -624,8 +646,10 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
      * The builder of download task.
      */
     public static class Builder {
-        @NonNull final String url;
-        @NonNull final Uri uri;
+        @NonNull
+        final String url;
+        @NonNull
+        final Uri uri;
         private volatile Map<String, List<String>> headerMapFields;
 
         /**
@@ -922,7 +946,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
         }
     }
 
-    @Override public boolean equals(Object obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (super.equals(obj)) return true;
 
         if (obj instanceof DownloadTask) {
@@ -934,11 +959,13 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
         return false;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return (url + providedPathFile.toString() + filenameHolder.get()).hashCode();
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return super.toString() + "@" + id + "@" + url + "@" + directoryFile.toString()
                 + "/" + filenameHolder.get();
     }
@@ -952,7 +979,8 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
         return new MockTaskForCompare(id);
     }
 
-    @NonNull public MockTaskForCompare mock(int id) {
+    @NonNull
+    public MockTaskForCompare mock(int id) {
         return new MockTaskForCompare(id, this);
     }
 
@@ -974,10 +1002,14 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
 
     public static class MockTaskForCompare extends IdentifiedTask {
         final int id;
-        @NonNull final String url;
-        @NonNull final File providedPathFile;
-        @Nullable final String filename;
-        @NonNull final File parentFile;
+        @NonNull
+        final String url;
+        @NonNull
+        final File providedPathFile;
+        @Nullable
+        final String filename;
+        @NonNull
+        final File parentFile;
 
         public MockTaskForCompare(int id) {
             this.id = id;
@@ -995,23 +1027,32 @@ public class DownloadTask extends IdentifiedTask implements Comparable<DownloadT
             this.filename = task.getFilename();
         }
 
-        @Override public int getId() {
+        @Override
+        public int getId() {
             return id;
         }
 
-        @NonNull @Override public String getUrl() {
+        @NonNull
+        @Override
+        public String getUrl() {
             return url;
         }
 
-        @NonNull @Override protected File getProvidedPathFile() {
+        @NonNull
+        @Override
+        protected File getProvidedPathFile() {
             return providedPathFile;
         }
 
-        @NonNull @Override public File getParentFile() {
+        @NonNull
+        @Override
+        public File getParentFile() {
             return parentFile;
         }
 
-        @Nullable @Override public String getFilename() {
+        @Nullable
+        @Override
+        public String getFilename() {
             return filename;
         }
     }

@@ -19,6 +19,7 @@ package com.liulishuo.okdownload.core.dispatcher;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -80,7 +81,8 @@ public class CallbackDispatcher {
         }
 
         uiHandler.post(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 for (DownloadTask task : errorCollection) {
                     task.getListener().taskEnd(task, EndCause.ERROR, realCause);
                 }
@@ -140,7 +142,8 @@ public class CallbackDispatcher {
         }
 
         uiHandler.post(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 for (DownloadTask task : completedTaskCollection) {
                     task.getListener().taskEnd(task, EndCause.COMPLETED, null);
                 }
@@ -169,7 +172,8 @@ public class CallbackDispatcher {
         }
 
         uiHandler.post(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 for (DownloadTask task : canceledCollection) {
                     task.getListener().taskEnd(task, EndCause.CANCELED, null);
                 }
@@ -182,7 +186,8 @@ public class CallbackDispatcher {
     }
 
     static class DefaultTransmitListener implements DownloadListener {
-        @NonNull private final Handler uiHandler;
+        @NonNull
+        private final Handler uiHandler;
 
         DefaultTransmitListener(@NonNull Handler uiHandler) {
             this.uiHandler = uiHandler;
@@ -194,7 +199,8 @@ public class CallbackDispatcher {
             inspectTaskStart(task);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().taskStart(task);
                     }
                 });
@@ -209,7 +215,8 @@ public class CallbackDispatcher {
             Util.d(TAG, "-----> start trial task(" + task.getId() + ") " + headerFields);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().connectTrialStart(task, headerFields);
                     }
                 });
@@ -225,7 +232,8 @@ public class CallbackDispatcher {
                     + ") code[" + responseCode + "]" + headerFields);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener()
                                 .connectTrialEnd(task, responseCode, headerFields);
                     }
@@ -244,7 +252,8 @@ public class CallbackDispatcher {
             inspectDownloadFromBeginning(task, info, cause);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().downloadFromBeginning(task, info, cause);
                     }
                 });
@@ -260,7 +269,8 @@ public class CallbackDispatcher {
             inspectDownloadFromBreakpoint(task, info);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().downloadFromBreakpoint(task, info);
                     }
                 });
@@ -276,7 +286,8 @@ public class CallbackDispatcher {
                     + ") block(" + blockIndex + ") " + requestHeaderFields);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().connectStart(task, blockIndex, requestHeaderFields);
                     }
                 });
@@ -293,7 +304,8 @@ public class CallbackDispatcher {
                     + blockIndex + ") code[" + responseCode + "]" + requestHeaderFields);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().connectEnd(task, blockIndex, responseCode,
                                 requestHeaderFields);
                     }
@@ -310,7 +322,8 @@ public class CallbackDispatcher {
             Util.d(TAG, "fetchStart taskId: " + task.getId());
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().fetchStart(task, blockIndex, contentLength);
                     }
                 });
@@ -329,7 +342,8 @@ public class CallbackDispatcher {
 
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().fetchProgress(task, blockIndex, increaseBytes);
                     }
                 });
@@ -344,7 +358,8 @@ public class CallbackDispatcher {
             Util.d(TAG, "fetchEnd taskId: " + task.getId());
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.post(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().fetchEnd(task, blockIndex, contentLength);
                     }
                 });
@@ -363,7 +378,8 @@ public class CallbackDispatcher {
             inspectTaskEnd(task, cause, realCause);
             if (task.isAutoCallbackToUIThread()) {
                 uiHandler.postDelayed(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         task.getListener().taskEnd(task, cause, realCause);
                     }
                 }, 100);

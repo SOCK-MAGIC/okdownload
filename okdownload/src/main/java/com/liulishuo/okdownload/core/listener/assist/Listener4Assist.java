@@ -18,7 +18,7 @@ package com.liulishuo.okdownload.core.listener.assist;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
+import androidx.collection.SparseArrayCompat;
 
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.core.breakpoint.BlockInfo;
@@ -124,13 +124,13 @@ public class Listener4Assist<T extends Listener4Assist.Listener4Model> implement
         private final int id;
         BreakpointInfo info;
         long currentOffset;
-        SparseArray<Long> blockCurrentOffsetMap;
+        SparseArrayCompat<Long> blockCurrentOffsetMap;
 
         public Listener4Model(int id) {
             this.id = id;
         }
 
-        SparseArray<Long> getBlockCurrentOffsetMap() {
+        SparseArrayCompat<Long> getBlockCurrentOffsetMap() {
             return blockCurrentOffsetMap;
         }
 
@@ -142,7 +142,7 @@ public class Listener4Assist<T extends Listener4Assist.Listener4Model> implement
             return blockCurrentOffsetMap.get(blockIndex);
         }
 
-        public SparseArray<Long> cloneBlockCurrentOffsetMap() {
+        public SparseArrayCompat<Long> cloneBlockCurrentOffsetMap() {
             return blockCurrentOffsetMap.clone();
         }
 
@@ -158,7 +158,7 @@ public class Listener4Assist<T extends Listener4Assist.Listener4Model> implement
             this.info = info;
             this.currentOffset = info.getTotalOffset();
 
-            SparseArray<Long> blockCurrentOffsetMap = new SparseArray<>();
+            SparseArrayCompat<Long> blockCurrentOffsetMap = new SparseArrayCompat<>();
             final int blockCount = info.getBlockCount();
             for (int i = 0; i < blockCount; i++) {
                 final BlockInfo blockInfo = info.getBlock(i);

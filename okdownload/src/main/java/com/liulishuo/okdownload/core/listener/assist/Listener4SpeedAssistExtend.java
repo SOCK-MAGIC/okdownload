@@ -18,7 +18,6 @@ package com.liulishuo.okdownload.core.listener.assist;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
 
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.SpeedCalculator;
@@ -36,18 +35,20 @@ public class Listener4SpeedAssistExtend implements Listener4Assist.AssistExtend,
         this.callback = callback;
     }
 
-    @Override public boolean dispatchInfoReady(DownloadTask task, @NonNull BreakpointInfo info,
-                                               boolean fromBreakpoint,
-                                               @NonNull Listener4Assist.Listener4Model model) {
+    @Override
+    public boolean dispatchInfoReady(DownloadTask task, @NonNull BreakpointInfo info,
+                                     boolean fromBreakpoint,
+                                     @NonNull Listener4Assist.Listener4Model model) {
         if (callback != null) {
             callback.infoReady(task, info, fromBreakpoint, (Listener4SpeedModel) model);
         }
         return true;
     }
 
-    @Override public boolean dispatchFetchProgress(@NonNull DownloadTask task, int blockIndex,
-                                                   long increaseBytes,
-                                                   @NonNull Listener4Assist.Listener4Model model) {
+    @Override
+    public boolean dispatchFetchProgress(@NonNull DownloadTask task, int blockIndex,
+                                         long increaseBytes,
+                                         @NonNull Listener4Assist.Listener4Model model) {
         final Listener4SpeedModel speedModel = (Listener4SpeedModel) model;
 
         speedModel.blockSpeeds.get(blockIndex).downloading(increaseBytes);
@@ -62,8 +63,9 @@ public class Listener4SpeedAssistExtend implements Listener4Assist.AssistExtend,
         return true;
     }
 
-    @Override public boolean dispatchBlockEnd(DownloadTask task, int blockIndex,
-                                              Listener4Assist.Listener4Model model) {
+    @Override
+    public boolean dispatchBlockEnd(DownloadTask task, int blockIndex,
+                                    Listener4Assist.Listener4Model model) {
         final Listener4SpeedModel speedModel = (Listener4SpeedModel) model;
 
         speedModel.blockSpeeds.get(blockIndex).endTask();
@@ -95,13 +97,14 @@ public class Listener4SpeedAssistExtend implements Listener4Assist.AssistExtend,
         return true;
     }
 
-    @Override public Listener4SpeedModel create(int id) {
+    @Override
+    public Listener4SpeedModel create(int id) {
         return new Listener4SpeedModel(id);
     }
 
     public static class Listener4SpeedModel extends Listener4Assist.Listener4Model {
         SpeedCalculator taskSpeed;
-        SparseArray<SpeedCalculator> blockSpeeds;
+        SparseArrayCompat<SpeedCalculator> blockSpeeds;
 
         public SpeedCalculator getTaskSpeed() {
             return taskSpeed;
@@ -115,10 +118,11 @@ public class Listener4SpeedAssistExtend implements Listener4Assist.AssistExtend,
             super(id);
         }
 
-        @Override public void onInfoValid(@NonNull BreakpointInfo info) {
+        @Override
+        public void onInfoValid(@NonNull BreakpointInfo info) {
             super.onInfoValid(info);
             this.taskSpeed = new SpeedCalculator();
-            this.blockSpeeds = new SparseArray<>();
+            this.blockSpeeds = new SparseArrayCompat<>();
 
             final int blockCount = info.getBlockCount();
             for (int i = 0; i < blockCount; i++) {

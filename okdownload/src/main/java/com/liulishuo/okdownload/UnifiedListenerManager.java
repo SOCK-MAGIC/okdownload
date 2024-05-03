@@ -18,7 +18,7 @@ package com.liulishuo.okdownload;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
+import androidx.collection.SparseArrayCompat;
 
 import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.liulishuo.okdownload.core.cause.EndCause;
@@ -31,11 +31,11 @@ import java.util.Map;
 
 public class UnifiedListenerManager {
 
-    final SparseArray<ArrayList<DownloadListener>> realListenerMap;
+    final SparseArrayCompat<ArrayList<DownloadListener>> realListenerMap;
     final List<Integer> autoRemoveListenerIdList = new ArrayList<>();
 
     public UnifiedListenerManager() {
-        realListenerMap = new SparseArray<>();
+        realListenerMap = new SparseArrayCompat<>();
     }
 
     public synchronized void detachListener(int id) {
@@ -278,7 +278,7 @@ public class UnifiedListenerManager {
     };
 
     private static DownloadListener[] getThreadSafeArray(DownloadTask task,
-                                                         SparseArray<ArrayList<DownloadListener>>
+                                                         SparseArrayCompat<ArrayList<DownloadListener>>
                                                                  realListenerMap) {
         final ArrayList<DownloadListener> listenerList = realListenerMap.get(task.getId());
         if (listenerList == null || listenerList.size() <= 0) return null;

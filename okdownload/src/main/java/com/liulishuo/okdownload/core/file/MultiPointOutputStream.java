@@ -19,9 +19,10 @@ package com.liulishuo.okdownload.core.file;
 import android.net.Uri;
 import android.os.StatFs;
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import android.util.SparseArray;
+import androidx.collection.SparseArrayCompat;
 
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.OkDownload;
@@ -55,9 +56,9 @@ public class MultiPointOutputStream {
             60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
             Util.threadFactory("OkDownload file io", false));
 
-    final SparseArray<DownloadOutputStream> outputStreamMap = new SparseArray<>();
+    final SparseArrayCompat<DownloadOutputStream> outputStreamMap = new SparseArrayCompat<>();
 
-    final SparseArray<AtomicLong> noSyncLengthMap = new SparseArray<>();
+    final SparseArrayCompat<AtomicLong> noSyncLengthMap = new SparseArrayCompat<>();
     final AtomicLong allNoSyncLength = new AtomicLong();
     final AtomicLong lastSyncTimestamp = new AtomicLong();
     boolean canceled = false;
@@ -73,15 +74,17 @@ public class MultiPointOutputStream {
 
     volatile Future syncFuture;
     volatile Thread runSyncThread;
-    final SparseArray<Thread> parkedRunBlockThreadMap = new SparseArray<>();
+    final SparseArrayCompat<Thread> parkedRunBlockThreadMap = new SparseArrayCompat<>();
 
-    @NonNull private final Runnable syncRunnable;
+    @NonNull
+    private final Runnable syncRunnable;
     private String path;
 
     IOException syncException;
-    @NonNull ArrayList<Integer> noMoreStreamList;
+    @NonNull
+    ArrayList<Integer> noMoreStreamList;
 
-//    @SuppressFBWarnings("IS2_INCONSISTENT_SYNC")
+    //    @SuppressFBWarnings("IS2_INCONSISTENT_SYNC")
     List<Integer> requireStreamBlocks;
 
     MultiPointOutputStream(@NonNull final DownloadTask task,
@@ -139,7 +142,8 @@ public class MultiPointOutputStream {
 
     public void cancelAsync() {
         FILE_IO_EXECUTOR.execute(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 cancel();
             }
         });
@@ -312,8 +316,7 @@ public class MultiPointOutputStream {
     void inspectStreamState(StreamsState state) {
         state.newNoMoreStreamBlockList.clear();
 
-        @SuppressWarnings("unchecked")
-        final List<Integer> clonedList = (List<Integer>) noMoreStreamList.clone();
+        @SuppressWarnings("unchecked") final List<Integer> clonedList = (List<Integer>) noMoreStreamList.clone();
         final Set<Integer> uniqueBlockList = new HashSet<>(clonedList);
         final int noMoreStreamBlockCount = uniqueBlockList.size();
         if (noMoreStreamBlockCount != requireStreamBlocks.size()) {
@@ -328,7 +331,7 @@ public class MultiPointOutputStream {
             state.isNoMoreStream = true;
         }
 
-        final SparseArray<DownloadOutputStream> streamMap = outputStreamMap.clone();
+        final SparseArrayCompat<DownloadOutputStream> streamMap = outputStreamMap.clone();
         final int size = streamMap.size();
         for (int i = 0; i < size; i++) {
             final int blockIndex = streamMap.keyAt(i);
@@ -458,7 +461,7 @@ public class MultiPointOutputStream {
             size = noSyncLengthMap.size();
         }
 
-        final SparseArray<Long> increaseLengthMap = new SparseArray<>(size);
+        final SparseArrayCompat<Long> increaseLengthMap = new SparseArrayCompat<>(size);
 
         try {
             for (int i = 0; i < size; i++) {
