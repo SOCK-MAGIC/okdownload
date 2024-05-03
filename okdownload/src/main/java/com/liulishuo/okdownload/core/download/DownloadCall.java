@@ -17,9 +17,11 @@
 package com.liulishuo.okdownload.core.download;
 
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.imcys.bilibilias.core.common.utils.ExecutorUtil;
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.OkDownload;
 import com.liulishuo.okdownload.core.NamedRunnable;
@@ -29,7 +31,6 @@ import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.liulishuo.okdownload.core.breakpoint.DownloadStore;
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.liulishuo.okdownload.core.cause.ResumeFailedCause;
-import com.liulishuo.okdownload.core.connection.DownloadOkHttpConnection;
 import com.liulishuo.okdownload.core.file.MultiPointOutputStream;
 import com.liulishuo.okdownload.core.file.ProcessFileStrategy;
 
@@ -41,16 +42,9 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
 
 public class DownloadCall extends NamedRunnable implements Comparable<DownloadCall> {
-    private static final ExecutorService EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-            60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
-            Util.threadFactory("OkDownload Block", false));
+    private static final ExecutorService EXECUTOR = ExecutorUtil.INSTANCE.getExecutorService();
 
     private static final String TAG = "DownloadCall";
 

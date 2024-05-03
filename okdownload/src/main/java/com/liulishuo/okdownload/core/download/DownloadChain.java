@@ -19,6 +19,7 @@ package com.liulishuo.okdownload.core.download;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.imcys.bilibilias.core.common.utils.ExecutorUtil;
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.OkDownload;
 import com.liulishuo.okdownload.core.Util;
@@ -39,16 +40,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DownloadChain implements Runnable {
 
-    private static final ExecutorService EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-            60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
-            Util.threadFactory("OkDownload Cancel Block", false));
+    private static final ExecutorService EXECUTOR = ExecutorUtil.INSTANCE.getExecutorService();
 
     private static final String TAG = "DownloadChain";
 
@@ -180,6 +176,7 @@ public class DownloadChain implements Runnable {
 
     /**
      * 单块 开始真正下载
+     *
      * @throws IOException
      */
     private void start() throws IOException {
@@ -228,6 +225,7 @@ public class DownloadChain implements Runnable {
 
     /**
      * 调用 网络链接
+     *
      * @return
      * @throws IOException
      */
@@ -243,6 +241,7 @@ public class DownloadChain implements Runnable {
 
     /**
      * 循环 处理 分块数据
+     *
      * @return
      * @throws IOException
      */

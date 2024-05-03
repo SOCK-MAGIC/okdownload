@@ -11,6 +11,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.common)
     implementation(libs.androidx.annotation)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.core)
