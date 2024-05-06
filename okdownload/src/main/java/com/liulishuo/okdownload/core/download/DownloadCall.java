@@ -21,7 +21,6 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.imcys.bilibilias.core.common.utils.ExecutorUtil;
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.OkDownload;
 import com.liulishuo.okdownload.core.NamedRunnable;
@@ -44,7 +43,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class DownloadCall extends NamedRunnable implements Comparable<DownloadCall> {
-    private static final ExecutorService EXECUTOR = ExecutorUtil.INSTANCE.getExecutorService();
+    private static final ExecutorService EXECUTOR = Util.createThreadPool();
 
     private static final String TAG = "DownloadCall";
 

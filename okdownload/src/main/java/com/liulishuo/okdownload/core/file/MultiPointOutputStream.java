@@ -43,18 +43,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
 public class MultiPointOutputStream {
     private static final String TAG = "MultiPointOutputStream";
-    private static final ExecutorService FILE_IO_EXECUTOR = new ThreadPoolExecutor(0,
-            Integer.MAX_VALUE,
-            60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
-            Util.threadFactory("OkDownload file io", false));
+    private static final ExecutorService FILE_IO_EXECUTOR = Util.createThreadPool();
 
     final SparseArrayCompat<DownloadOutputStream> outputStreamMap = new SparseArrayCompat<>();
 

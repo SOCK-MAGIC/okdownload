@@ -39,9 +39,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DownloadDispatcher {
@@ -63,8 +60,7 @@ public class DownloadDispatcher {
 
     // for the case of tasks has been cancelled but didn't remove from runningAsyncCalls list yet.
     private final AtomicInteger flyingCanceledAsyncCallCount = new AtomicInteger();
-    private @Nullable
-    volatile ExecutorService executorService;
+    @NonNull private final ExecutorService executorService;
 
     // for avoiding processCalls when doing enqueue/cancel operation
     private final AtomicInteger skipProceedCallCount = new AtomicInteger();
@@ -73,9 +69,7 @@ public class DownloadDispatcher {
     private DownloadStore store;
 
     public DownloadDispatcher() {
-        this(new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
-                Util.threadFactory("OkDownload Download", false)));
+        this(Util.createThreadPool());
     }
 
     public DownloadDispatcher(ExecutorService executorService) {
@@ -84,10 +78,6 @@ public class DownloadDispatcher {
 
     public void setDownloadStore(@NonNull DownloadStore store) {
         this.store = store;
-    }
-
-    public void setExecutorService(@NonNull ExecutorService executorService) {
-        this.executorService = executorService;
     }
 
     synchronized ExecutorService getExecutorService() {

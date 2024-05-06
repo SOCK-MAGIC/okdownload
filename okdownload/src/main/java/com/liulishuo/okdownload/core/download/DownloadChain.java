@@ -19,7 +19,6 @@ package com.liulishuo.okdownload.core.download;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.imcys.bilibilias.core.common.utils.ExecutorUtil;
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.OkDownload;
 import com.liulishuo.okdownload.core.Util;
@@ -44,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DownloadChain implements Runnable {
 
-    private static final ExecutorService EXECUTOR = ExecutorUtil.INSTANCE.getExecutorService();
+    private static final ExecutorService EXECUTOR = Util.createThreadPool();
 
     private static final String TAG = "DownloadChain";
 

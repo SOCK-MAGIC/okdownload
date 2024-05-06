@@ -27,11 +27,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.StatFs;
 import android.provider.OpenableColumns;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.util.Log;
 
-import com.liulishuo.okdownload.BuildConfig;
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.OkDownload;
 import com.liulishuo.okdownload.core.breakpoint.BlockInfo;
@@ -40,6 +41,9 @@ import com.liulishuo.okdownload.core.breakpoint.BreakpointStoreOnCache;
 import com.liulishuo.okdownload.core.breakpoint.DownloadStore;
 import com.liulishuo.okdownload.core.connection.DownloadConnection;
 import com.liulishuo.okdownload.core.connection.DownloadOkHttpConnection;
+import com.liulishuo.okdownload.core.dispatcher.DownloadDispatcher;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,9 +56,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import kotlinx.coroutines.Dispatchers;
 
 public class Util {
 
@@ -92,13 +102,21 @@ public class Util {
     }
 
     public static class EmptyLogger implements Logger {
-        @Override public void e(String tag, String msg, Exception e) { }
+        @Override
+        public void e(String tag, String msg, Exception e) {
+        }
 
-        @Override public void w(String tag, String msg) { }
+        @Override
+        public void w(String tag, String msg) {
+        }
 
-        @Override public void d(String tag, String msg) { }
+        @Override
+        public void d(String tag, String msg) {
+        }
 
-        @Override public void i(String tag, String msg) { }
+        @Override
+        public void i(String tag, String msg) {
+        }
     }
 
     @SuppressWarnings("PMD.LoggerIsNotStaticFinal")
@@ -294,6 +312,7 @@ public class Util {
 
     /**
      * 检查 下载文件块
+     *
      * @param task
      * @param info
      * @param instanceLength
@@ -387,14 +406,15 @@ public class Util {
         return uri.getScheme().equals(ContentResolver.SCHEME_FILE);
     }
 
-    @Nullable public static String getFilenameFromContentUri(@NonNull Uri contentUri) {
+    @Nullable
+    public static String getFilenameFromContentUri(@NonNull Uri contentUri) {
         final ContentResolver resolver = OkDownload.with().context().getContentResolver();
         final Cursor cursor = resolver.query(contentUri, null, null, null, null);
         if (cursor != null) {
             try {
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                if(columnIndex >= 0) {
+                if (columnIndex >= 0) {
                     return cursor.getString(columnIndex);
                 }
                 return "";
@@ -406,8 +426,9 @@ public class Util {
         return null;
     }
 
-//    @SuppressFBWarnings(value = "DMI")
-    @NonNull public static File getParentFile(final File file) {
+    //    @SuppressFBWarnings(value = "DMI")
+    @NonNull
+    public static File getParentFile(final File file) {
         final File candidate = file.getParentFile();
         return candidate == null ? new File("/") : candidate;
     }
@@ -419,7 +440,7 @@ public class Util {
             try {
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
-                if(columnIndex >= 0) {
+                if (columnIndex >= 0) {
                     return cursor.getLong(columnIndex);
                 }
                 return 0;
@@ -470,5 +491,14 @@ public class Util {
     public static void addDefaultUserAgent(@NonNull final DownloadConnection connection) {
         final String userAgent = "OkDownload/" + "2323";
         connection.addHeader(USER_AGENT, userAgent);
+    }
+    private static final ExecutorService DEFAULT_EXECUTOR_SERVICE = new ThreadPoolExecutor(0,
+            Integer.MAX_VALUE,
+            60, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
+            Util.threadFactory("okdownload", false));
+    @NonNull
+    @Contract(" -> new")
+    public static ExecutorService createThreadPool() {
+        return DEFAULT_EXECUTOR_SERVICE;
     }
 }

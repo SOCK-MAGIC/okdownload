@@ -32,11 +32,14 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class DownloadOkHttpConnection implements DownloadConnection, DownloadConnection.Connected {
-    @NonNull final OkHttpClient client;
-    @NonNull private final Request.Builder requestBuilder;
+    @NonNull
+    final OkHttpClient client;
+    @NonNull
+    private final Request.Builder requestBuilder;
 
     private Request request;
     Response response;
+
     DownloadOkHttpConnection(@NonNull OkHttpClient client,
                              @NonNull Request.Builder requestBuilder) {
         this.client = client;
@@ -47,23 +50,27 @@ public class DownloadOkHttpConnection implements DownloadConnection, DownloadCon
         this(client, new Request.Builder().url(url));
     }
 
-    @Override public void addHeader(String name, String value) {
+    @Override
+    public void addHeader(String name, String value) {
         this.requestBuilder.addHeader(name, value);
     }
 
-    @Override public Connected execute() throws IOException {
+    @Override
+    public Connected execute() throws IOException {
         request = requestBuilder.build();
         response = client.newCall(request).execute();
         return this;
     }
 
-    @Override public void release() {
+    @Override
+    public void release() {
         request = null;
         if (response != null) response.close();
         response = null;
     }
 
-    @Override public Map<String, List<String>> getRequestProperties() {
+    @Override
+    public Map<String, List<String>> getRequestProperties() {
         if (request != null) {
             return request.headers().toMultimap();
         } else {
@@ -71,7 +78,8 @@ public class DownloadOkHttpConnection implements DownloadConnection, DownloadCon
         }
     }
 
-    @Override public String getRequestProperty(String key) {
+    @Override
+    public String getRequestProperty(String key) {
         if (request != null) {
             return request.header(key);
         } else {
@@ -79,28 +87,33 @@ public class DownloadOkHttpConnection implements DownloadConnection, DownloadCon
         }
     }
 
-    @Override public int getResponseCode() throws IOException {
+    @Override
+    public int getResponseCode() throws IOException {
         if (response == null) throw new IOException("Please invoke execute first!");
         return response.code();
     }
 
-    @Override public InputStream getInputStream() throws IOException {
+    @Override
+    public InputStream getInputStream() throws IOException {
         if (response == null) throw new IOException("Please invoke execute first!");
         final ResponseBody body = response.body();
         if (body == null) throw new IOException("no body found on response!");
         return body.byteStream();
     }
 
-    @Override public boolean setRequestMethod(@NonNull String method) throws ProtocolException {
+    @Override
+    public boolean setRequestMethod(@NonNull String method) throws ProtocolException {
         this.requestBuilder.method(method, null);
         return true;
     }
 
-    @Override public Map<String, List<String>> getResponseHeaderFields() {
+    @Override
+    public Map<String, List<String>> getResponseHeaderFields() {
         return response == null ? null : response.headers().toMultimap();
     }
 
-    @Override public String getResponseHeaderField(String name) {
+    @Override
+    public String getResponseHeaderField(String name) {
         return response == null ? null : response.header(name);
     }
 
@@ -110,34 +123,28 @@ public class DownloadOkHttpConnection implements DownloadConnection, DownloadCon
         if (priorRes != null
                 && response.isSuccessful()
                 && RedirectUtil.isRedirect(priorRes.code())) {
-                // prior response is a redirect response, so current response
-                // has redirect location
-                return response.request().url().toString();
+            // prior response is a redirect response, so current response
+            // has redirect location
+            return response.request().url().toString();
         }
         return null;
     }
 
     public static class Factory implements DownloadConnection.Factory {
 
-        private OkHttpClient.Builder clientBuilder;
         private volatile OkHttpClient client;
 
-        public Factory setBuilder(@NonNull OkHttpClient.Builder builder) {
-            this.clientBuilder = builder;
+        public Factory setClient(final OkHttpClient client) {
+            this.client = client;
             return this;
         }
 
-        @NonNull public OkHttpClient.Builder builder() {
-            if (clientBuilder == null) clientBuilder = new OkHttpClient.Builder();
-            return clientBuilder;
-        }
-
-        @Override public DownloadConnection create(String url) throws IOException {
+        @Override
+        public DownloadConnection create(String url) throws IOException {
             if (client == null) {
                 synchronized (Factory.class) {
                     if (client == null) {
-                        client = clientBuilder != null ? clientBuilder.build() : new OkHttpClient();
-                        clientBuilder = null;
+                        client = new OkHttpClient();
                     }
                 }
             }
